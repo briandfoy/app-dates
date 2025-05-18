@@ -1,0 +1,4 @@
+#!/usr/bin/perl
+use App::dates;
+
+App::dates->run(@ARGV);
