@@ -95,7 +95,7 @@ ever.
 
 =cut
 
-sub max_days ($class) { 10 }
+sub max_days ($class) { 365 }
 
 =item * not_a_date( YYYY-MM-DD )
 
