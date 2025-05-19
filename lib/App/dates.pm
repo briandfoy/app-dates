@@ -1,6 +1,8 @@
 package App::dates;
 use v5.36;
 
+our $VERSION = '0.901';
+
 =head1 NAME
 
 App::dates - list the dates between two endpoints
