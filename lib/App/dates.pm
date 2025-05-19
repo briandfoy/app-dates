@@ -35,6 +35,7 @@ As a module:
 
 =cut
 
+use Carp qw(croak);
 use DateTime;
 
 __PACKAGE__->run(@ARGV) unless caller;
@@ -159,7 +160,7 @@ sub process_args ( $class, @args ) {
 			DateTime->now->$method( days => $max )->ymd('-');
 			}
 		else {
-			die "Bad start date. Must be one of YYYY-MM-DD, . (today), of +-N (offset)";
+			croak "Bad start date <$args[0]>. Must be one of YYYY-MM-DD, . (today), of +-N (offset)";
 			}
 		};
 
@@ -178,7 +179,7 @@ sub process_args ( $class, @args ) {
 			iso2dt($start)->subtract( days => $max - 1 )->ymd('-');
 			}
 		else {
-			die "Bad end date. Must be one of YYYY-MM-DD or N (offset)";
+			croak "Bad end date <$args[1]>. Must be one of YYYY-MM-DD or N (offset)";
 			}
 		};
 	say "START: $start END: $end";
