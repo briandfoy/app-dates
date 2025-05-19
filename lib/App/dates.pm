@@ -137,27 +137,22 @@ sub process_args ( $class, @args ) {
 		no warnings qw(uninitialized);
 		$args[0] = undef if $args[0] eq '.';
 
-		if( ! defined $args[0] or $args[0] eq '.') {
-			say STDERR "In dot";
-			my $t = DateTime->now->ymd('-');
-			say $t;
-			$t;
+		if( ! defined $args[0] ) {
+			DateTime->now( time_zone => 'local' );
 			}
 		elsif( $args[0] =~ m/\A (\d+) - (\d\d) - (\d\d) \z/ax ) {
 			DateTime->new(
 				year  => $1,
 				month => $2,
 				day   => $3,
-				)->ymd('-');
+				);
 			}
 		elsif ( $args[0] =~ m/\A ([+-]?)(\d+) \z/ax ){
-			my $sign = $1 eq '-' ? -1 : 1;
-			say STDERR "sign is $sign";
+			my $sign   = $1 eq '-' ? -1 : 1;
 			my $offset = $2;
-			my $max  = $sign * ($offset > $MaxDays ? $MaxDays : $offset);
+			my $max    = $offset > $MaxDays ? $MaxDays : $offset;
 			my $method = $sign < 0 ? 'add' : 'subtract';
-			say STDERR "method is $method";
-			DateTime->now->$method( days => $max )->ymd('-');
+			DateTime->now( time_zone => 'local' )->$method( days => $max );
 			}
 		else {
 			croak "Bad start date <$args[0]>. Must be one of YYYY-MM-DD, . (today), of +-N (offset)";
@@ -167,16 +162,22 @@ sub process_args ( $class, @args ) {
 	my $end = do {
 		$args[1] = $MaxDays unless defined $args[1];
 
-		if( $args[1] =~ m/\A (\d+) - (\d\d) - (\d\d) \z/ax ) {
-			Datetime->new(
+		if( ! defined $args[1] ) {
+			$start->clone->subtract( days => $MaxDays - 1 );
+			}
+		elsif( $args[1] =~ m/\A (\d+) - (\d\d) - (\d\d) \z/ax ) {
+			DateTime->new(
 				year  => $1,
 				month => $2,
 				day   => $3,
-				)->ymd('-');
+				);
 			}
-		elsif ( $args[1] =~ m/\A (\d+) \z/ax ){
-			my $max = $1 > $MaxDays ? $MaxDays : $1;
-			iso2dt($start)->subtract( days => $max - 1 )->ymd('-');
+		elsif( $args[1] =~ m/\A ([+-]?)(\d+) \z/ax ) {
+			my $sign   = $1 eq '-' ? -1 : 1;
+			my $offset = $2;
+			my $max    = $offset > $MaxDays ? $MaxDays : $offset;
+			my $method = $sign < 0 ? 'add' : 'subtract';
+			$start->clone->$method( days => $max );
 			}
 		else {
 			croak "Bad end date <$args[1]>. Must be one of YYYY-MM-DD or N (offset)";
@@ -184,7 +185,8 @@ sub process_args ( $class, @args ) {
 		};
 	say "START: $start END: $end";
 
-	($start, $end);
+	($start, $end) = map { $_->ymd('-') } ($start, $end);
+	return ($start, $end);
 	}
 
 =item * run( ARGS )
