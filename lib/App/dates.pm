@@ -67,11 +67,18 @@ sub list_dates ( $class, $start, $end ) {
 	state $rc = require List::Util;
 	my $dt = iso2dt($start);
 
+	my $future = $end gt $start;
+	my $method = $future ? 'add' : 'subtract';
+
 	my @dates;
-	while(1) {
+	NEXT_DATE: while(1) {
 		push @dates, $dt->ymd('-');
 		last if $dt->ymd('-') eq $end;
-		$dt->subtract( days => 1 )->ymd('-');
+
+		DATE: {
+			$dt->$method( days => 1 )->ymd('-');
+			redo DATE if $class->not_a_date( $dt->ymd('-') );
+			};
 		}
 
 	return \@dates;
@@ -86,7 +93,33 @@ ever.
 
 =cut
 
-sub max_days () { 10 }
+sub max_days ($class) { 10 }
+
+=item * not_a_date( YYYY-MM-DD )
+
+Returns true if the date that DateTime returns is not actually a date
+in the Gregorian calendar. So far, that's 1582-10-05 to 1582-10-14.
+
+=cut
+
+sub not_a_date ( $class, $date ) {
+	state $bogus = {
+		map { $_ => 1 } qw(
+			1582-10-05
+			1582-10-06
+			1582-10-07
+			1582-10-08
+			1582-10-09
+			1582-10-10
+			1582-10-11
+			1582-10-12
+			1582-10-13
+			1582-10-14
+			)
+		};
+
+	return exists $bogus->{$date};
+	}
 
 =item * process_args(ARGS)
 
