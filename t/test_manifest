@@ -1,3 +1,5 @@
 load.t
+list_dates.t
+dates.t
 pod.t
 pod_coverage.t
