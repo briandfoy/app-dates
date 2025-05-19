@@ -1,4 +1,51 @@
 #!/usr/bin/perl
+use v5.36;
+
 use App::dates;
 
-App::dates->run(@ARGV);
+if( $ARGV[0] =~ /\A-(\?|h|-help)\z/ ) {
+	print_help();
+	exit 0;
+	}
+elsif( $ARGV[0] =~ /\A-v|-version\z/ ) {
+	print_version();
+	exit 0;
+	}
+
+eval { App::dates->run(@ARGV) };
+if( $@ ) {
+	say $@ =~ s/at .* line \d+\.\v+//r;
+	print_version();
+	print_help();
+	exit 1;
+	}
+
+sub print_help {
+	print <<~"HERE";
+
+	dates [options]
+
+	    -h, --help      print this message and exit
+	    -v, --version   print a verison message and exit
+
+	dates [ [+-]N | YYYY-MM-DD | [+-]N | . ]  [ [+-]N | YYYY-MM-DD ]
+
+	The start date can be one of:
+
+	    YYYY-MM-DD
+	    +N          N days in the past
+	    -N          N days in the future
+	    .           today (using the local time zone)
+
+	The end date can be one of:
+
+	    YYYY-MM-DD
+	    +N          N days in the past
+	    -N          N days in the future
+
+	HERE
+	}
+
+sub print_version {
+	printf "dates implemented by App::dates $App::dates::VERSION\n";
+	}
