@@ -144,7 +144,7 @@ sub process_args ( $class, @args ) {
 			$t;
 			}
 		elsif( $args[0] =~ m/\A (\d+) - (\d\d) - (\d\d) \z/ax ) {
-			Datetime->new(
+			DateTime->new(
 				year  => $1,
 				month => $2,
 				day   => $3,
