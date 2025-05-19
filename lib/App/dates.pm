@@ -131,7 +131,7 @@ Convert the arguments to the start and end dates to list.
 =cut
 
 sub process_args ( $class, @args ) {
-	my $MaxDays = max_days();
+	my $MaxDays = $class->max_days();
 
 	my $start = do {
 		no warnings qw(uninitialized);
