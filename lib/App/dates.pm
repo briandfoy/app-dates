@@ -79,7 +79,7 @@ sub list_dates ( $class, $start, $end ) {
 		last if $dt->ymd('-') eq $end;
 
 		DATE: {
-			$dt->$method( days => 1 )->ymd('-');
+			$dt->$method( days => 1 );
 			redo DATE if $class->not_a_date( $dt->ymd('-') );
 			};
 		}
