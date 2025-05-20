@@ -29,7 +29,7 @@ As a module:
 
 	use App::dates;
 
-	my $dates = App::dates->run( $start, $end );
+	App::dates->run( $start, $end );
 
 =head1 DESCRIPTION
 
